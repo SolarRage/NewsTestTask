@@ -15,12 +15,14 @@ class WebActivity : AppCompatActivity() {
         val view = binding.root
         setContentView(view)
 
+        val bundle: Bundle? = intent.extras
+        val url: String? = intent.getStringExtra("url")
 
         binding.apply {
             web.webViewClient = WebViewClient()
 
 
-            web.loadUrl("https://www.geeksforgeeks.org/")
+            web.loadUrl(url.toString())
 
             web.settings.javaScriptEnabled = true
 

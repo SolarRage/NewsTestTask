@@ -21,6 +21,8 @@ class HomeViewModel(
 
     private val textChangeSubject: BehaviorSubject<String> = BehaviorSubject.createDefault("")
 
+    private val searchNewsPage = 1
+
     private val compositeDisposable = CompositeDisposable()
     private var articleDisposable: Disposable? = null
 
@@ -39,6 +41,7 @@ class HomeViewModel(
         compositeDisposable += textChangeSubject
             .debounce(500, MILLISECONDS)
             .distinctUntilChanged()
+            .filter{it.isNotBlank()}
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
                 { handleTextChanged(it) },
@@ -46,9 +49,22 @@ class HomeViewModel(
             )
     }
 
+    fun loadNews(){
+        disposeNewsRequest()
+        articleDisposable = newsRepository.getNews("ua", searchNewsPage)
+            .flattenAsFlowable { it.articles }
+            .map { mapToItemModel(it) }
+            .toList()
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe({
+                setState { copy(articles = it) }
+            }
+            ) { Log.e(TAG, "Error while receiving articles") }
+    }
+
     private fun handleTextChanged(text: String) {
         disposeNewsRequest()
-        articleDisposable = newsRepository.getBreakingNews("ua")
+        articleDisposable = newsRepository.searchNews(text, searchNewsPage)
             .flattenAsFlowable { it.articles }
             .map { mapToItemModel(it) }
             .toList()

@@ -5,7 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import com.myarulin.newstesttask.adaptor.NewsAdapter
+import com.myarulin.newstesttask.adapter.NewsAdapter
 import com.myarulin.newstesttask.databinding.BookmarkFragmentBinding
 import org.koin.androidx.viewmodel.ext.android.viewModel
 

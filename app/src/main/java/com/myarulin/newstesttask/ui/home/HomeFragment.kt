@@ -1,14 +1,18 @@
 package com.myarulin.newstesttask.ui.home
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ProgressBar
 import androidx.core.widget.doOnTextChanged
-import com.myarulin.newstesttask.adaptor.NewsAdapter
+import com.myarulin.newstesttask.adapter.NewsAdapter
+import com.myarulin.newstesttask.adapter.VerticalSpaceItemDecoration
 import com.myarulin.newstesttask.databinding.HomeFragmentBinding
+import com.myarulin.newstesttask.model.ArticleModel
 import com.myarulin.newstesttask.ui.BaseFragment
+import com.myarulin.newstesttask.ui.WebActivity
 import com.myarulin.newstesttask.ui.home.HomeContract.HomeEffect
 import com.myarulin.newstesttask.ui.home.HomeContract.HomeViewState
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -35,14 +39,38 @@ class HomeFragment : BaseFragment<HomeViewState, HomeEffect>() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initViews()
+        viewModel.loadNews()
     }
 
-    private fun initViews(){
+    private fun shareNews() {
+        val sendIntent: Intent = Intent().apply {
+            action = Intent.ACTION_SEND
+            putExtra(Intent.EXTRA_TEXT, "This is my text to send.")
+            type = "text/plain"
+        }
+        val shareIntent = Intent.createChooser(sendIntent, null)
+        startActivity(shareIntent)
+    }
+
+    private fun onItemClick(article: ArticleModel) {
+        val intent = Intent(requireContext(), WebActivity::class.java)
+        intent.putExtra("url", article.website)
+        startActivity(intent)
+    }
+
+    private fun onShareClick(article: ArticleModel) {
+    }
+
+    private fun onBookmarkClick(article: ArticleModel) {
+    }
+
+    private fun initViews() {
         binding.llSearchContainer.setOnClickListener { binding.etSearch.requestFocus() }
         loader = binding.progressBar
-        newsAdapter = NewsAdapter()
+        newsAdapter = NewsAdapter(::onItemClick, ::onShareClick, ::onBookmarkClick)
         binding.rvNews.adapter = newsAdapter
-        binding.etSearch.doOnTextChanged{ text, _, _, _ -> viewModel.onTextChange(text.toString()) }
+        binding.rvNews.addItemDecoration(VerticalSpaceItemDecoration(requireContext()))
+        binding.etSearch.doOnTextChanged { text, _, _, _ -> viewModel.onTextChange(text.toString()) }
     }
 
     override fun onDestroyView() {

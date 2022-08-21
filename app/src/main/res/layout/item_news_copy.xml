@@ -19,6 +19,7 @@
             android:id="@+id/ivNews"
             android:layout_width="match_parent"
             android:layout_height="240dp"
+            android:scaleType="centerCrop"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
@@ -43,7 +44,6 @@
             android:layout_marginTop="10dp"
             android:background="@drawable/ripple_circle_background"
             android:padding="6dp"
-            android:tint="@color/primary"
             app:layout_constraintEnd_toStartOf="@id/ivShare"
             app:layout_constraintTop_toTopOf="parent"
             app:srcCompat="@drawable/ic_item_bookmark" />
