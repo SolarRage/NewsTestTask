@@ -2,6 +2,7 @@ package com.myarulin.newstesttask.ui
 
 import android.os.Bundle
 import android.webkit.WebViewClient
+import androidx.activity.setViewTreeOnBackPressedDispatcherOwner
 import androidx.appcompat.app.AppCompatActivity
 import com.myarulin.newstesttask.databinding.ActivityWebBinding
 
@@ -20,17 +21,20 @@ class WebActivity : AppCompatActivity() {
 
         binding.apply {
             web.webViewClient = WebViewClient()
-
-
             web.loadUrl(url.toString())
-
             web.settings.javaScriptEnabled = true
-
             web.settings.setSupportZoom(true)
+            btnBack.setOnClickListener{
+                onBackPressed()
+            }
+            tvBack.setOnClickListener{
+                onBackPressed()
+            }
         }
     }
 
     override fun onBackPressed() {
+
         binding.apply {
             if (web.canGoBack())
                 web.goBack()

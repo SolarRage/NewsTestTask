@@ -17,20 +17,24 @@
             app:layout_constraintTop_toTopOf="parent">
 
             <ImageButton
+                android:id="@+id/btnBack"
                 android:layout_width="8dp"
                 android:layout_height="14dp"
+                android:clickable="true"
                 android:layout_gravity="center_vertical"
                 android:layout_marginStart="24dp"
                 android:src="@drawable/ic_back_btn" />
 
 
             <TextView
+                android:id="@+id/tvBack"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
                 android:layout_marginStart="48dp"
                 android:fontFamily="@font/inter"
-                android:text="Back"
+                android:clickable="true"
+                android:text="@string/back"
                 android:textSize="18sp"
                 android:textStyle="normal" />
         </FrameLayout>

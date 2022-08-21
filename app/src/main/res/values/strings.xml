@@ -3,4 +3,5 @@
     <string name="news_app">NEWS APP</string>
     <string name="bookmarks">BOOKMARKS</string>
     <string name="search">Search</string>
+    <string name="back">Back</string>
 </resources>

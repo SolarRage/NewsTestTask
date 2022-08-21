@@ -42,16 +42,6 @@ class HomeFragment : BaseFragment<HomeViewState, HomeEffect>() {
         viewModel.loadNews()
     }
 
-    private fun shareNews() {
-        val sendIntent: Intent = Intent().apply {
-            action = Intent.ACTION_SEND
-            putExtra(Intent.EXTRA_TEXT, "This is my text to send.")
-            type = "text/plain"
-        }
-        val shareIntent = Intent.createChooser(sendIntent, null)
-        startActivity(shareIntent)
-    }
-
     private fun onItemClick(article: ArticleModel) {
         val intent = Intent(requireContext(), WebActivity::class.java)
         intent.putExtra("url", article.website)
@@ -59,18 +49,31 @@ class HomeFragment : BaseFragment<HomeViewState, HomeEffect>() {
     }
 
     private fun onShareClick(article: ArticleModel) {
+        val sendIntent: Intent = Intent().apply {
+            action = Intent.ACTION_SEND
+            putExtra(Intent.EXTRA_TEXT, article.website)
+            type = "text/plain"
+        }
+        val shareIntent = Intent.createChooser(sendIntent, null)
+        startActivity(shareIntent)
     }
 
     private fun onBookmarkClick(article: ArticleModel) {
     }
 
     private fun initViews() {
-        binding.llSearchContainer.setOnClickListener { binding.etSearch.requestFocus() }
-        loader = binding.progressBar
-        newsAdapter = NewsAdapter(::onItemClick, ::onShareClick, ::onBookmarkClick)
-        binding.rvNews.adapter = newsAdapter
-        binding.rvNews.addItemDecoration(VerticalSpaceItemDecoration(requireContext()))
-        binding.etSearch.doOnTextChanged { text, _, _, _ -> viewModel.onTextChange(text.toString()) }
+        binding.apply {
+            llSearchContainer.setOnClickListener { binding.etSearch.requestFocus() }
+            loader = progressBar
+            newsAdapter = NewsAdapter(::onItemClick, ::onShareClick, ::onBookmarkClick)
+            rvNews.adapter = newsAdapter
+            rvNews.addItemDecoration(VerticalSpaceItemDecoration(requireContext()))
+            etSearch.doOnTextChanged { text, _, _, _ -> viewModel.onTextChange(text.toString()) }
+            btnCross.setOnClickListener {
+                etSearch.text.clear()
+            }
+        }
+
     }
 
     override fun onDestroyView() {

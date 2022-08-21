@@ -12,6 +12,7 @@ import com.bumptech.glide.Glide
 import com.myarulin.newstesttask.R
 import com.myarulin.newstesttask.adapter.NewsAdapter.ArticleViewHolder
 import com.myarulin.newstesttask.model.ArticleModel
+import java.net.URL
 
 class NewsAdapter(
     private val onItemClick: (ArticleModel) -> Unit,
@@ -59,7 +60,8 @@ class NewsAdapter(
             Glide.with(itemView.context).load(item.imageURL).into(image)
             title.text = item.title
             description.text = item.description
-            website.text = item.website
+            val url = URL(item.website)
+            website.text = url.host
             ivBookmark.setOnClickListener { onBookmarkClick(item) }
             ivShare.setOnClickListener { onShareClick(item) }
             clCardContainer.setOnClickListener { onItemClick(item) }
