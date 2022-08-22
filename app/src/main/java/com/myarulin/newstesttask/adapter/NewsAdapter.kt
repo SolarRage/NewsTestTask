@@ -12,15 +12,16 @@ import com.bumptech.glide.Glide
 import com.myarulin.newstesttask.R
 import com.myarulin.newstesttask.adapter.NewsAdapter.ArticleViewHolder
 import com.myarulin.newstesttask.db.Article
+import com.myarulin.newstesttask.model.ArticleModel
 import java.net.URL
 
 class NewsAdapter(
-    private val onItemClick: (Article) -> Unit,
-    private val onShareClick: (Article) -> Unit,
-    private val onBookmarkClick: (Article) -> Unit,
+    private val onItemClick: (ArticleModel) -> Unit,
+    private val onShareClick: (ArticleModel) -> Unit,
+    private val onBookmarkClick: (ArticleModel) -> Unit,
 ) : RecyclerView.Adapter<ArticleViewHolder>()  {
 
-    private var articles: List<Article> = emptyList()
+    private var articles: List<ArticleModel> = emptyList()
 
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ArticleViewHolder {
@@ -34,7 +35,7 @@ class NewsAdapter(
 
     override fun getItemCount(): Int = articles.size
 
-    fun setProducts(article: List<Article>) {
+    fun setProducts(article: List<ArticleModel>) {
         val result = DiffUtil.calculateDiff(ArticlesDiffUtilCallback(this.articles, article))
         result.dispatchUpdatesTo(this)
         this.articles = article
@@ -43,9 +44,9 @@ class NewsAdapter(
 
     class ArticleViewHolder(
         view: View,
-        private val onItemClick: (Article) -> Unit,
-        private val onShareClick: (Article) -> Unit,
-        private val onBookmarkClick: (Article) -> Unit,
+        private val onItemClick: (ArticleModel) -> Unit,
+        private val onShareClick: (ArticleModel) -> Unit,
+        private val onBookmarkClick: (ArticleModel) -> Unit,
     ) : RecyclerView.ViewHolder(view) {
 
         private val image: ImageView = view.findViewById(R.id.ivNews)
@@ -56,11 +57,11 @@ class NewsAdapter(
         private val ivShare: ImageView = view.findViewById(R.id.ivShare)
         private val clCardContainer: ConstraintLayout = view.findViewById(R.id.clCardContainer)
 
-        fun bind(item: Article) {
-            Glide.with(itemView.context).load(item.urlToImage).into(image)
+        fun bind(item: ArticleModel) {
+            Glide.with(itemView.context).load(item.imageURL).into(image)
             title.text = item.title
             description.text = item.description
-            val url = URL(item.url)
+            val url = URL(item.website)
             website.text = url.host
             ivBookmark.setOnClickListener { onBookmarkClick(item) }
             ivShare.setOnClickListener { onShareClick(item) }
@@ -70,8 +71,8 @@ class NewsAdapter(
 
 
     private class ArticlesDiffUtilCallback(
-        private var oldItems: List<Article>,
-        private var newItems: List<Article>
+        private var oldItems: List<ArticleModel>,
+        private var newItems: List<ArticleModel>
     ) : DiffUtil.Callback() {
 
 
@@ -81,7 +82,7 @@ class NewsAdapter(
 
 
         override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
-            return oldItems[oldItemPosition].id == newItems[newItemPosition].id
+            return oldItems[oldItemPosition].newsId == newItems[newItemPosition].newsId
         }
 
         override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {

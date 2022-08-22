@@ -5,9 +5,10 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
+import com.myarulin.newstesttask.model.ArticleModel
 
 @Database(
-    entities = [Article::class],
+    entities = [ArticleModel::class],
     version = 1
 )
 @TypeConverters(Convertors::class)

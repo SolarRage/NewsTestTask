@@ -1,6 +1,8 @@
 package com.myarulin.newstesttask.ui.bookmarks
 
 import android.util.Log
+import com.myarulin.newstesttask.db.Article
+import com.myarulin.newstesttask.model.ArticleModel
 import com.myarulin.newstesttask.repo.NewsRepository
 import com.myarulin.newstesttask.ui.BaseViewStateViewModel
 import com.myarulin.newstesttask.ui.bookmarks.BookmarksContract.BookmarksEffect
@@ -9,6 +11,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
 import io.reactivex.rxkotlin.plusAssign
+import io.reactivex.schedulers.Schedulers
 import io.reactivex.subjects.BehaviorSubject
 import java.util.concurrent.TimeUnit
 
@@ -47,24 +50,27 @@ class BookmarkViewModel(val newsRepository: NewsRepository)
         articleDisposable = newsRepository.getSavedNews()
             .flattenAsFlowable { it }
             .toList()
+            .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({
                 setState { copy(articles = it) }
             }
-            ) { Log.e(TAG, "Error while receiving articles") }
+            ) {
+                Log.e(TAG, "Error while receiving articles")
+            }
     }
 
     private fun handleTextChanged(text: String) {
 
     }
 
-/*    private fun mapToItemModel(item: Article) = ArticleModel(
+    private fun mapToItemModel(item: Article) = ArticleModel(
         item.id,
         item.title,
         item.description,
         item.url,
         item.urlToImage
-    )*/
+    )
 
     private fun disposeNewsRequest() {
         articleDisposable?.let {

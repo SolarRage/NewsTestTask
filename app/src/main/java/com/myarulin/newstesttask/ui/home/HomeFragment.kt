@@ -11,6 +11,7 @@ import com.myarulin.newstesttask.adapter.NewsAdapter
 import com.myarulin.newstesttask.adapter.VerticalSpaceItemDecoration
 import com.myarulin.newstesttask.databinding.HomeFragmentBinding
 import com.myarulin.newstesttask.db.Article
+import com.myarulin.newstesttask.model.ArticleModel
 import com.myarulin.newstesttask.ui.BaseFragment
 import com.myarulin.newstesttask.ui.WebActivity
 import com.myarulin.newstesttask.ui.home.HomeContract.HomeEffect
@@ -42,23 +43,23 @@ class HomeFragment : BaseFragment<HomeViewState, HomeEffect>() {
         viewModel.loadNews()
     }
 
-    private fun onItemClick(article: Article) {
+    private fun onItemClick(article: ArticleModel) {
         val intent = Intent(requireContext(), WebActivity::class.java)
-        intent.putExtra("url", article.url)
+        intent.putExtra("url", article.website)
         startActivity(intent)
     }
 
-    private fun onShareClick(article: Article) {
+    private fun onShareClick(article: ArticleModel) {
         val sendIntent: Intent = Intent().apply {
             action = Intent.ACTION_SEND
-            putExtra(Intent.EXTRA_TEXT, article.url)
+            putExtra(Intent.EXTRA_TEXT, article.website)
             type = "text/plain"
         }
         val shareIntent = Intent.createChooser(sendIntent, null)
         startActivity(shareIntent)
     }
 
-    private fun onBookmarkClick(article: Article){
+    private fun onBookmarkClick(article: ArticleModel){
         viewModel.saveBookmark(article)
     }
 

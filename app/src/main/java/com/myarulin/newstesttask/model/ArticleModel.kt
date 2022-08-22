@@ -1,11 +1,17 @@
-/*
 package com.myarulin.newstesttask.model
 
+import androidx.room.Entity
+import androidx.room.PrimaryKey
+
+
+@Entity(
+    tableName = "articles"
+)
 data class ArticleModel(
-    val newsId: Int?,
+    @PrimaryKey(autoGenerate = true)
+    val newsId: Int? = 0,
     val title: String?,
     val description: String?,
     val website: String?,
     val imageURL: String?,
 )
-*/
