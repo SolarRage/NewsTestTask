@@ -85,7 +85,7 @@ class HomeFragment : BaseFragment<HomeViewState, HomeEffect>() {
 
     override fun onStateChanged(state: HomeViewState) {
         loader.visibility = if (state.isLoading) View.VISIBLE else View.GONE
-        newsAdapter.setProducts(state.articles)
+        newsAdapter.setArticles(state.articles)
     }
 
     override fun handleEffect(effect: HomeEffect) {

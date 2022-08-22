@@ -39,6 +39,10 @@ class BookmarkFragment: BaseFragment<BookmarksViewState, BookmarksEffect>() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        initViews()
+    }
+
+    private fun initViews(){
         viewModel.loadNews()
         binding.apply {
             llSearchContainer.setOnClickListener { binding.etSearch.requestFocus() }
@@ -50,9 +54,9 @@ class BookmarkFragment: BaseFragment<BookmarksViewState, BookmarksEffect>() {
             btnCross.setOnClickListener {
                 etSearch.text?.clear()
             }
-
         }
     }
+
     private fun onItemClick(article: ArticleModel) {
         val intent = Intent(requireContext(), WebActivity::class.java)
         intent.putExtra("url", article.website)
@@ -69,7 +73,13 @@ class BookmarkFragment: BaseFragment<BookmarksViewState, BookmarksEffect>() {
         startActivity(shareIntent)
     }
 
+    /**
+     * bad code. find another way to delete and update items in rv
+     */
     private fun onBookmarkClick(article: ArticleModel) {
+        viewModel.deleteBookmark(article)
+        newsAdapter.notifyItemRemoved(article.newsId!!)
+        initViews()
     }
 
     override fun onDestroyView() {
@@ -79,7 +89,7 @@ class BookmarkFragment: BaseFragment<BookmarksViewState, BookmarksEffect>() {
 
     override fun onStateChanged(state: BookmarksViewState) {
         loader.visibility = if (state.isLoading) View.VISIBLE else View.GONE
-        newsAdapter.setProducts(state.articles)
+        newsAdapter.setArticles(state.articles)
     }
 
     override fun handleEffect(effect: BookmarksEffect) {

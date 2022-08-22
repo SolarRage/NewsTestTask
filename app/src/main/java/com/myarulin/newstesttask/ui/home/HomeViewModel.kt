@@ -61,7 +61,9 @@ class HomeViewModel(
             .subscribe({
                 setState { copy(articles = it) }
             }
-            ) { Log.e(TAG, "Error while receiving articles") }
+            ) {
+                Log.e(TAG, "Error while load articles")
+            }
     }
 
     private fun handleTextChanged(text: String) {
@@ -74,7 +76,9 @@ class HomeViewModel(
             .subscribe({
                 setState { copy(articles = it) }
             }
-            ) { Log.e(TAG, "Error while receiving articles") }
+            ) {
+                Log.e(TAG, "Error while receiving articles")
+            }
     }
 
     fun saveBookmark(article: ArticleModel) {

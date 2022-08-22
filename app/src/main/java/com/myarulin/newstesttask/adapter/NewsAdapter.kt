@@ -35,7 +35,7 @@ class NewsAdapter(
 
     override fun getItemCount(): Int = articles.size
 
-    fun setProducts(article: List<ArticleModel>) {
+    fun setArticles(article: List<ArticleModel>) {
         val result = DiffUtil.calculateDiff(ArticlesDiffUtilCallback(this.articles, article))
         result.dispatchUpdatesTo(this)
         this.articles = article
@@ -68,6 +68,7 @@ class NewsAdapter(
             clCardContainer.setOnClickListener { onItemClick(item) }
         }
     }
+
 
 
     private class ArticlesDiffUtilCallback(

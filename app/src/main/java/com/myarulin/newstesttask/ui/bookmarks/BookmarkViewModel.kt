@@ -60,17 +60,18 @@ class BookmarkViewModel(val newsRepository: NewsRepository)
             }
     }
 
-    private fun handleTextChanged(text: String) {
+    fun deleteBookmark(article: ArticleModel){
+        articleDisposable = newsRepository.deleteArticle(article)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe({})
+            { Log.e(TAG, "Error while delete articles") }
 
     }
 
-    private fun mapToItemModel(item: Article) = ArticleModel(
-        item.id,
-        item.title,
-        item.description,
-        item.url,
-        item.urlToImage
-    )
+    private fun handleTextChanged(text: String) {
+
+    }
 
     private fun disposeNewsRequest() {
         articleDisposable?.let {

@@ -29,7 +29,7 @@ interface NewsApi {
     ): Single<NewsResponseItem>
 
     companion object{
-        const val API_KEY = "eb9dd41b381347b2bef3a76e1ed092b0"
+        const val API_KEY = "28f98597964c4b3c9241437a4e8f2627"
         const val BASE_URL = "https://newsapi.org"
     }
 }
