@@ -2,7 +2,6 @@ package com.myarulin.newstesttask.ui.home
 
 import android.util.Log
 import com.myarulin.newstesttask.db.Article
-import com.myarulin.newstesttask.model.ArticleModel
 import com.myarulin.newstesttask.repo.NewsRepository
 import com.myarulin.newstesttask.ui.BaseViewStateViewModel
 import com.myarulin.newstesttask.ui.home.HomeContract.HomeViewState
@@ -41,7 +40,7 @@ class HomeViewModel(
         compositeDisposable += textChangeSubject
             .debounce(500, MILLISECONDS)
             .distinctUntilChanged()
-            .filter{it.isNotBlank()}
+            .filter { it.isNotBlank() }
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
                 { handleTextChanged(it) },
@@ -49,11 +48,10 @@ class HomeViewModel(
             )
     }
 
-    fun loadNews(){
+    fun loadNews() {
         disposeNewsRequest()
         articleDisposable = newsRepository.getNews("ua", searchNewsPage)
             .flattenAsFlowable { it.articles }
-            .map { mapToItemModel(it) }
             .toList()
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({
@@ -66,7 +64,6 @@ class HomeViewModel(
         disposeNewsRequest()
         articleDisposable = newsRepository.searchNews(text, searchNewsPage)
             .flattenAsFlowable { it.articles }
-            .map { mapToItemModel(it) }
             .toList()
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({
@@ -75,13 +72,13 @@ class HomeViewModel(
             ) { Log.e(TAG, "Error while receiving articles") }
     }
 
-    private fun mapToItemModel(item: Article) = ArticleModel(
-        item.id,
-        item.title,
-        item.description,
-        item.url,
-        item.urlToImage
-    )
+    fun saveBookmark(article: Article) {
+        articleDisposable = newsRepository.upsert(article)
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe({})
+            { Log.e(TAG, "Error while save articles") }
+    }
+
 
     private fun disposeNewsRequest() {
         articleDisposable?.let {

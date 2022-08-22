@@ -1,3 +1,4 @@
+/*
 package com.myarulin.newstesttask.model
 
 data class ArticleModel(
@@ -7,3 +8,4 @@ data class ArticleModel(
     val website: String?,
     val imageURL: String?,
 )
+*/

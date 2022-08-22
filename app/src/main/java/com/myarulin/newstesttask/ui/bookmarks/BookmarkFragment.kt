@@ -1,20 +1,29 @@
 package com.myarulin.newstesttask.ui.bookmarks
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.fragment.app.Fragment
+import android.widget.ProgressBar
+import androidx.core.widget.doOnTextChanged
 import com.myarulin.newstesttask.adapter.NewsAdapter
+import com.myarulin.newstesttask.adapter.VerticalSpaceItemDecoration
 import com.myarulin.newstesttask.databinding.BookmarkFragmentBinding
+import com.myarulin.newstesttask.db.Article
+import com.myarulin.newstesttask.ui.BaseFragment
+import com.myarulin.newstesttask.ui.WebActivity
+import com.myarulin.newstesttask.ui.bookmarks.BookmarksContract.BookmarksEffect
+import com.myarulin.newstesttask.ui.bookmarks.BookmarksContract.BookmarksViewState
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
-class BookmarkFragment: Fragment() {
+class BookmarkFragment: BaseFragment<BookmarksViewState, BookmarksEffect>() {
 
     private var _binding: BookmarkFragmentBinding? = null
     private val binding get() = _binding!!
-    private val  viewModel: BookmarkViewModel by viewModel()
+    override val  viewModel: BookmarkViewModel by viewModel()
     lateinit var newsAdapter: NewsAdapter
+    private lateinit var loader: ProgressBar
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -23,16 +32,55 @@ class BookmarkFragment: Fragment() {
     ): View? {
         _binding = BookmarkFragmentBinding.inflate(inflater, container, false)
         return binding.root
-
     }
+
+
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        binding.llSearchContainer.setOnClickListener { binding.etSearch.requestFocus() }
+        viewModel.loadNews()
+        binding.apply {
+            llSearchContainer.setOnClickListener { binding.etSearch.requestFocus() }
+            loader = progressBar
+            newsAdapter = NewsAdapter(::onItemClick, ::onShareClick, ::onBookmarkClick)
+            recyclerView.adapter = newsAdapter
+            recyclerView.addItemDecoration(VerticalSpaceItemDecoration(requireContext()))
+            etSearch.doOnTextChanged { text, _, _, _ -> viewModel.onTextChange(text.toString()) }
+            btnCross.setOnClickListener {
+                etSearch.text?.clear()
+            }
+
+        }
+    }
+    private fun onItemClick(article: Article) {
+        val intent = Intent(requireContext(), WebActivity::class.java)
+        intent.putExtra("url", article.url)
+        startActivity(intent)
+    }
+
+    private fun onShareClick(article: Article) {
+        val sendIntent: Intent = Intent().apply {
+            action = Intent.ACTION_SEND
+            putExtra(Intent.EXTRA_TEXT, article.url)
+            type = "text/plain"
+        }
+        val shareIntent = Intent.createChooser(sendIntent, null)
+        startActivity(shareIntent)
+    }
+
+    private fun onBookmarkClick(article: Article) {
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+
+    override fun onStateChanged(state: BookmarksViewState) {
+        loader.visibility = if (state.isLoading) View.VISIBLE else View.GONE
+        newsAdapter.setProducts(state.articles)
+    }
+
+    override fun handleEffect(effect: BookmarksEffect) {
     }
 }

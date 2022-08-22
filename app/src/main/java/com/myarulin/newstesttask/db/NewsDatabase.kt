@@ -13,20 +13,23 @@ import androidx.room.TypeConverters
 @TypeConverters(Convertors::class)
 abstract class NewsDatabase : RoomDatabase() {
     abstract fun getArticleDao(): NewsDao
-    companion object{
+
+    companion object {
 
         @Volatile
-        private var instance : NewsDatabase? = null
-        private val  LOCK = Any()
+        private var instance: NewsDatabase? = null
+        private val LOCK = Any()
 
-        operator  fun invoke(context: Context) = instance ?: synchronized(LOCK){
-            instance ?: createDatabase(context).also { instance = it}
+        operator fun invoke(context: Context) = instance ?: synchronized(LOCK) {
+            instance ?: createDatabase(context).also { instance = it }
         }
-        private fun createDatabase(context: Context)=
+
+        private fun createDatabase(context: Context) =
             Room.databaseBuilder(
                 context.applicationContext,
                 NewsDatabase::class.java,
                 "article_db.db"
-            ).build()
+            )
+                .build()
     }
 }

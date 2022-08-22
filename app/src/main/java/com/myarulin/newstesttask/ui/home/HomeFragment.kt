@@ -10,7 +10,7 @@ import androidx.core.widget.doOnTextChanged
 import com.myarulin.newstesttask.adapter.NewsAdapter
 import com.myarulin.newstesttask.adapter.VerticalSpaceItemDecoration
 import com.myarulin.newstesttask.databinding.HomeFragmentBinding
-import com.myarulin.newstesttask.model.ArticleModel
+import com.myarulin.newstesttask.db.Article
 import com.myarulin.newstesttask.ui.BaseFragment
 import com.myarulin.newstesttask.ui.WebActivity
 import com.myarulin.newstesttask.ui.home.HomeContract.HomeEffect
@@ -42,23 +42,24 @@ class HomeFragment : BaseFragment<HomeViewState, HomeEffect>() {
         viewModel.loadNews()
     }
 
-    private fun onItemClick(article: ArticleModel) {
+    private fun onItemClick(article: Article) {
         val intent = Intent(requireContext(), WebActivity::class.java)
-        intent.putExtra("url", article.website)
+        intent.putExtra("url", article.url)
         startActivity(intent)
     }
 
-    private fun onShareClick(article: ArticleModel) {
+    private fun onShareClick(article: Article) {
         val sendIntent: Intent = Intent().apply {
             action = Intent.ACTION_SEND
-            putExtra(Intent.EXTRA_TEXT, article.website)
+            putExtra(Intent.EXTRA_TEXT, article.url)
             type = "text/plain"
         }
         val shareIntent = Intent.createChooser(sendIntent, null)
         startActivity(shareIntent)
     }
 
-    private fun onBookmarkClick(article: ArticleModel) {
+    private fun onBookmarkClick(article: Article){
+        viewModel.saveBookmark(article)
     }
 
     private fun initViews() {
