@@ -3,6 +3,7 @@ package com.myarulin.newstesttask.repo
 import com.myarulin.newstesttask.api.NetService
 import com.myarulin.newstesttask.db.NewsDatabase
 import com.myarulin.newstesttask.model.ArticleModel
+import com.myarulin.newstesttask.model.toDatabaseModel
 
 class NewsRepository(
     val db: NewsDatabase
@@ -14,14 +15,16 @@ class NewsRepository(
     fun searchNews(searchQuery: String, pageNumber: Int) =
         api.searchForNews(searchQuery)
 
-    fun upsert(article: ArticleModel) = db.getArticleDao().upsert(article)
+    fun upsert(article: ArticleModel) = db.getArticleDao().upsert(article.toDatabaseModel())
 
     fun getSavedNews() = db.getArticleDao().getAll()
 
     fun searchSavedNews(search: String) = db.getArticleDao().searchArticle(search)
 
-    fun deleteArticle(article: ArticleModel) = db.getArticleDao().deleteArticle(article)
+    fun deleteArticle(article: ArticleModel) = db.getArticleDao()
+        .deleteArticle(article.toDatabaseModel())
 
-    fun checkBookmark(website: String) = db.getArticleDao().isItemExists(website)
+    fun isItemExists(website: String) = db.getArticleDao().isItemExists(website)
 
+    fun subscribeForChanges() = db.getArticleDao().subscribeForChanges()
 }

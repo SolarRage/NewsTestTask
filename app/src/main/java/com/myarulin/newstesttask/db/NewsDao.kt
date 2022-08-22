@@ -1,25 +1,29 @@
 package com.myarulin.newstesttask.db
 
 import androidx.room.*
-import com.myarulin.newstesttask.model.ArticleModel
+import com.myarulin.newstesttask.db.entities.ArticleEntity
 import io.reactivex.Completable
+import io.reactivex.Flowable
 import io.reactivex.Single
 
 @Dao
 interface NewsDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun upsert(article: ArticleModel): Completable
+    fun upsert(article: ArticleEntity): Completable
 
     @Query("SELECT * FROM articles")
-    fun getAll(): Single<List<ArticleModel>>
+    fun getAll(): Single<List<ArticleEntity>>
 
     @Query("SELECT * FROM articles WHERE title LIKE '%' || :search || '%'")
-    fun searchArticle(search: String?): Single<List<ArticleModel>>
+    fun searchArticle(search: String?): Single<List<ArticleEntity>>
 
     @Delete
-    fun deleteArticle(article: ArticleModel): Completable
+    fun deleteArticle(article: ArticleEntity): Completable
 
     @Query("SELECT EXISTS(SELECT * FROM articles WHERE website = :website)")
     fun isItemExists(website: String): Single<Boolean>
+
+    @Query("SELECT * FROM articles")
+    fun subscribeForChanges(): Flowable<List<ArticleEntity>>
 }

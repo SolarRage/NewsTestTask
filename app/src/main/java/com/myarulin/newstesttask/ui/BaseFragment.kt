@@ -27,6 +27,11 @@ abstract class BaseFragment<ViewState, Effect : ViewEffect> : Fragment(), Lifecy
         viewModel.init()
     }
 
+    override fun onStop() {
+        super.onStop()
+        viewModel.onStop()
+    }
+
     abstract fun onStateChanged(state: ViewState)
 
     abstract fun handleEffect(effect: Effect)

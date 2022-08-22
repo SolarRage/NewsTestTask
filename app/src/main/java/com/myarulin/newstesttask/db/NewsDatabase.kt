@@ -4,10 +4,11 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import com.myarulin.newstesttask.db.entities.ArticleEntity
 import com.myarulin.newstesttask.model.ArticleModel
 
 @Database(
-    entities = [ArticleModel::class],
+    entities = [ArticleEntity::class],
     version = 1
 )
 abstract class NewsDatabase : RoomDatabase() {

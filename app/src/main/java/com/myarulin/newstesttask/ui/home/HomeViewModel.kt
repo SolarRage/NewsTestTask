@@ -6,15 +6,15 @@ import com.myarulin.newstesttask.model.ArticleModel
 import com.myarulin.newstesttask.repo.NewsRepository
 import com.myarulin.newstesttask.ui.BaseViewStateViewModel
 import com.myarulin.newstesttask.ui.home.HomeContract.HomeViewState
+import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
 import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.schedulers.Schedulers
 import io.reactivex.subjects.BehaviorSubject
 import java.util.concurrent.TimeUnit.MILLISECONDS
 
-class HomeViewModel(
+class HomeViewModel(//todo: добавить дефолтный диспозабл и чистить все диспосаблы по onStop()
     private val newsRepository: NewsRepository
 ) : BaseViewStateViewModel<HomeViewState, HomeContract.HomeEffect>() {
 
@@ -24,7 +24,6 @@ class HomeViewModel(
 
     private val searchNewsPage = 1
 
-    private val compositeDisposable = CompositeDisposable()
     private var articleDisposable: Disposable? = null
 
     override fun getInitialState() = HomeViewState()
@@ -38,7 +37,7 @@ class HomeViewModel(
     }
 
     private fun subscribeForTestChanges() {
-        compositeDisposable += textChangeSubject
+        lifecycleDisposable += textChangeSubject
             .debounce(500, MILLISECONDS)
             .distinctUntilChanged()
             .filter { it.isNotBlank() }
@@ -50,10 +49,9 @@ class HomeViewModel(
     }
 
     fun loadNews() {
-        disposeNewsRequest()
-        articleDisposable = newsRepository.getNews("ua", searchNewsPage)
+        lifecycleDisposable += newsRepository.getNews("ua", searchNewsPage)
             .flattenAsFlowable { it.articles }
-            .map { mapToItemModel(it) }
+            .flatMapSingle { mapToItemModel(it) }
             .toList()
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({
@@ -68,7 +66,7 @@ class HomeViewModel(
         disposeNewsRequest()
         articleDisposable = newsRepository.searchNews(text, searchNewsPage)
             .flattenAsFlowable { it.articles }
-            .map { mapToItemModel(it) }
+            .flatMapSingle { mapToItemModel(it) }
             .toList()
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({
@@ -79,22 +77,44 @@ class HomeViewModel(
             }
     }
 
-    fun saveBookmark(article: ArticleModel) {
-        disposeNewsRequest()
-        articleDisposable = newsRepository.upsert(article)
+    fun onBookmarkClick(article: ArticleModel) {
+        lifecycleDisposable += newsRepository.isItemExists(article.website)
+            .flatMap { isSaved ->
+                if (isSaved) {
+                    newsRepository.deleteArticle(article)
+                        .toSingleDefault(false)
+                } else {
+                    newsRepository.upsert(article)
+                        .toSingleDefault(true)
+                }
+            }
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
-            .subscribe({})
-            { Log.e(TAG, "Error while save articles : ${it.message}") }
+            .subscribe(
+                { handleArticleBookmarkStateChanged(article.copy(isSaved = it)) }
+            ) { Log.e(TAG, "Error while handling on bookmark click : ${it.message}") }
     }
 
+    private fun handleArticleBookmarkStateChanged(article: ArticleModel) {
+        val articles = viewStateLiveData.value?.articles.orEmpty().toMutableList().apply {
+            val indexOfArticle = indexOfFirst { it.website == article.website }
+            set(indexOfArticle, article)
+        }
+        setState { copy(articles = articles) }
+    }
 
-    private fun mapToItemModel(item: Article) = ArticleModel(
-        item.url.orEmpty(),
-        item.title,
-        item.description,
-        item.urlToImage
-    )
+    private fun mapToItemModel(article: Article): Single<ArticleModel> {
+        return newsRepository.isItemExists(article.url.orEmpty())
+            .map { isSaved ->
+                ArticleModel(
+                    article.url.orEmpty(),
+                    article.title,
+                    article.description,
+                    article.urlToImage,
+                    isSaved
+                )
+            }
+    }
 
     private fun disposeNewsRequest() {
         articleDisposable?.let {
@@ -102,5 +122,9 @@ class HomeViewModel(
                 it.dispose()
             }
         }
+    }
+
+    override fun onDispose() {
+        disposeNewsRequest()
     }
 }

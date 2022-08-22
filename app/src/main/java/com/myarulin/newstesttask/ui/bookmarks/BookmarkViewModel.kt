@@ -2,12 +2,12 @@ package com.myarulin.newstesttask.ui.bookmarks
 
 import android.util.Log
 import com.myarulin.newstesttask.model.ArticleModel
+import com.myarulin.newstesttask.model.toDomainModel
 import com.myarulin.newstesttask.repo.NewsRepository
 import com.myarulin.newstesttask.ui.BaseViewStateViewModel
 import com.myarulin.newstesttask.ui.bookmarks.BookmarksContract.BookmarksEffect
 import com.myarulin.newstesttask.ui.bookmarks.BookmarksContract.BookmarksViewState
 import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
 import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.schedulers.Schedulers
@@ -19,7 +19,6 @@ class BookmarkViewModel(
 ) : BaseViewStateViewModel<BookmarksViewState, BookmarksEffect>() {
 
     private val TAG = BookmarkViewModel::class.simpleName
-    private val compositeDisposable = CompositeDisposable()
     private val textChangeSubject: BehaviorSubject<String> = BehaviorSubject.createDefault("")
     private var articleDisposable: Disposable? = null
 
@@ -34,7 +33,7 @@ class BookmarkViewModel(
     }
 
     private fun subscribeForTestChanges() {
-        compositeDisposable += textChangeSubject
+        lifecycleDisposable += textChangeSubject
             .debounce(300, TimeUnit.MILLISECONDS)
             .distinctUntilChanged()
             .filter { it.isNotBlank() }
@@ -49,6 +48,7 @@ class BookmarkViewModel(
         disposeNewsRequest()
         articleDisposable = newsRepository.searchSavedNews(text)
             .flattenAsFlowable { it }
+            .map { it.toDomainModel() }
             .toList()
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
@@ -61,9 +61,9 @@ class BookmarkViewModel(
     }
 
     fun loadNews() {
-        disposeNewsRequest()
-        articleDisposable = newsRepository.getSavedNews()
+        lifecycleDisposable += newsRepository.getSavedNews()
             .flattenAsFlowable { it }
+            .map { it.toDomainModel() }
             .toList()
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
@@ -76,7 +76,7 @@ class BookmarkViewModel(
     }
 
     fun deleteBookmark(article: ArticleModel) {
-        articleDisposable = newsRepository.deleteArticle(article)
+        lifecycleDisposable += newsRepository.deleteArticle(article)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({ handleBookmarkDeleted(article) })
@@ -99,4 +99,7 @@ class BookmarkViewModel(
         }
     }
 
+    override fun onDispose() {
+        disposeNewsRequest()
+    }
 }

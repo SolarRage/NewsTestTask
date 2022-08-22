@@ -3,12 +3,14 @@ package com.myarulin.newstesttask.ui
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.myarulin.newstesttask.api.NetService
 import com.myarulin.newstesttask.ui.BaseFragment.ViewEffect
 import io.reactivex.Observable
+import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.subjects.PublishSubject
 
 abstract class BaseViewStateViewModel<ViewState, Effect : ViewEffect> : ViewModel() {
+
+    protected val lifecycleDisposable = CompositeDisposable()
 
     private val _viewStateLiveData: MutableLiveData<ViewState> by lazy {
         MutableLiveData(getInitialState())
@@ -35,7 +37,10 @@ abstract class BaseViewStateViewModel<ViewState, Effect : ViewEffect> : ViewMode
 
     abstract fun init()
 
-    protected val netApi by lazy {
-        NetService.configureRetrofit()
+    abstract fun onDispose()
+
+    fun onStop() {
+        lifecycleDisposable.dispose()
+        onDispose()
     }
 }

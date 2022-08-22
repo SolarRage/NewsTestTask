@@ -10,20 +10,21 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.myarulin.newstesttask.R
-import com.myarulin.newstesttask.ui.adapter.NewsAdapter.ArticleViewHolder
 import com.myarulin.newstesttask.model.ArticleModel
+import com.myarulin.newstesttask.ui.adapter.NewsAdapter.ArticleViewHolder
 import java.net.URL
 
 class NewsAdapter(
     private val onItemClick: (ArticleModel) -> Unit,
     private val onShareClick: (ArticleModel) -> Unit,
     private val onBookmarkClick: (ArticleModel) -> Unit,
-) : RecyclerView.Adapter<ArticleViewHolder>()  {
+) : RecyclerView.Adapter<ArticleViewHolder>() {
 
     private var articles: List<ArticleModel> = emptyList()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ArticleViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.item_news_copy, parent, false)
+        val view =
+            LayoutInflater.from(parent.context).inflate(R.layout.item_news_copy, parent, false)
         return ArticleViewHolder(view, onItemClick, onShareClick, onBookmarkClick)
     }
 
@@ -60,12 +61,16 @@ class NewsAdapter(
             title.text = item.title
             description.text = item.description
             website.text = URL(item.website).host
+
+            val bookmarkColorRes = if (item.isSaved) R.color.primary else R.color.white
+            val bookmarkColor = itemView.resources.getColor(bookmarkColorRes, null)
+            ivBookmark.setColorFilter(bookmarkColor)
             ivBookmark.setOnClickListener { onBookmarkClick(item) }
+
             ivShare.setOnClickListener { onShareClick(item) }
             clCardContainer.setOnClickListener { onItemClick(item) }
         }
     }
-
 
 
     private class ArticlesDiffUtilCallback(
