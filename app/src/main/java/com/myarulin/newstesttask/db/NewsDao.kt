@@ -3,7 +3,6 @@ package com.myarulin.newstesttask.db
 import androidx.room.*
 import com.myarulin.newstesttask.db.entities.ArticleEntity
 import io.reactivex.Completable
-import io.reactivex.Flowable
 import io.reactivex.Single
 
 @Dao
@@ -23,7 +22,4 @@ interface NewsDao {
 
     @Query("SELECT EXISTS(SELECT * FROM articles WHERE website = :website)")
     fun isItemExists(website: String): Single<Boolean>
-
-    @Query("SELECT * FROM articles")
-    fun subscribeForChanges(): Flowable<List<ArticleEntity>>
 }

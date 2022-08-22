@@ -14,7 +14,7 @@ import io.reactivex.schedulers.Schedulers
 import io.reactivex.subjects.BehaviorSubject
 import java.util.concurrent.TimeUnit.MILLISECONDS
 
-class HomeViewModel(//todo: добавить дефолтный диспозабл и чистить все диспосаблы по onStop()
+class HomeViewModel(
     private val newsRepository: NewsRepository
 ) : BaseViewStateViewModel<HomeViewState, HomeContract.HomeEffect>() {
 
@@ -33,12 +33,13 @@ class HomeViewModel(//todo: добавить дефолтный диспозаб
     }
 
     override fun init() {
+        loadNews()
         subscribeForTestChanges()
     }
 
     private fun subscribeForTestChanges() {
         lifecycleDisposable += textChangeSubject
-            .debounce(500, MILLISECONDS)
+            .debounce(300, MILLISECONDS)
             .distinctUntilChanged()
             .filter { it.isNotBlank() }
             .observeOn(AndroidSchedulers.mainThread())
@@ -48,7 +49,7 @@ class HomeViewModel(//todo: добавить дефолтный диспозаб
             )
     }
 
-    fun loadNews() {
+    private fun loadNews() {
         lifecycleDisposable += newsRepository.getNews("ua", searchNewsPage)
             .flattenAsFlowable { it.articles }
             .flatMapSingle { mapToItemModel(it) }

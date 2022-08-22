@@ -46,7 +46,6 @@ class BookmarkFragment : BaseFragment<BookmarksViewState, BookmarksEffect>() {
     }
 
     private fun initViews() {
-        viewModel.loadNews()
         binding.apply {
             llSearchContainer.setOnClickListener { binding.etSearch.requestFocus() }
             recyclerView.adapter = newsAdapter

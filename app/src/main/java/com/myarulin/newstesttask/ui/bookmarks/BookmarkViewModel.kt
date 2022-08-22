@@ -25,6 +25,7 @@ class BookmarkViewModel(
     override fun getInitialState() = BookmarksViewState()
 
     override fun init() {
+        loadNews()
         subscribeForTestChanges()
     }
 
@@ -60,7 +61,7 @@ class BookmarkViewModel(
             }
     }
 
-    fun loadNews() {
+    private fun loadNews() {
         lifecycleDisposable += newsRepository.getSavedNews()
             .flattenAsFlowable { it }
             .map { it.toDomainModel() }

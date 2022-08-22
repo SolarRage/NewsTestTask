@@ -1,21 +1,25 @@
 package com.myarulin.newstesttask.repo
 
-import com.myarulin.newstesttask.api.NetService
+import com.myarulin.newstesttask.api.NewsApi
 import com.myarulin.newstesttask.db.NewsDatabase
 import com.myarulin.newstesttask.model.ArticleModel
 import com.myarulin.newstesttask.model.toDatabaseModel
+import io.reactivex.Completable
 
 class NewsRepository(
-    val db: NewsDatabase
+    private val db: NewsDatabase,
+    private val api: NewsApi
 ) {
-    val api = NetService.configureRetrofit()
+
     fun getNews(countyCode: String, pageNumber: Int) =
         api.getBreakingNews(countyCode)
 
     fun searchNews(searchQuery: String, pageNumber: Int) =
         api.searchForNews(searchQuery)
 
-    fun upsert(article: ArticleModel) = db.getArticleDao().upsert(article.toDatabaseModel())
+    fun upsert(article: ArticleModel): Completable {
+        return db.getArticleDao().upsert(article.toDatabaseModel())
+    }
 
     fun getSavedNews() = db.getArticleDao().getAll()
 
@@ -25,6 +29,4 @@ class NewsRepository(
         .deleteArticle(article.toDatabaseModel())
 
     fun isItemExists(website: String) = db.getArticleDao().isItemExists(website)
-
-    fun subscribeForChanges() = db.getArticleDao().subscribeForChanges()
 }

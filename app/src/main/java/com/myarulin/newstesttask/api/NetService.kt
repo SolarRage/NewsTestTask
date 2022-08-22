@@ -17,7 +17,6 @@ class NetService {
             val httpLoggingInterceptor = HttpLoggingInterceptor()
             httpLoggingInterceptor.level = HttpLoggingInterceptor.Level.BODY
 
-
             val okHttpClient = OkHttpClient.Builder()
                 .addInterceptor(httpLoggingInterceptor)
                 .build()

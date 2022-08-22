@@ -40,7 +40,7 @@ abstract class BaseViewStateViewModel<ViewState, Effect : ViewEffect> : ViewMode
     abstract fun onDispose()
 
     fun onStop() {
-        lifecycleDisposable.dispose()
+        lifecycleDisposable.clear()
         onDispose()
     }
 }

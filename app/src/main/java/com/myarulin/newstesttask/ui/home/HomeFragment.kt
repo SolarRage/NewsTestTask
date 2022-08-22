@@ -43,7 +43,6 @@ class HomeFragment : BaseFragment<HomeViewState, HomeEffect>() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initViews()
-        viewModel.loadNews()
     }
 
     private fun onItemClick(article: ArticleModel) {
