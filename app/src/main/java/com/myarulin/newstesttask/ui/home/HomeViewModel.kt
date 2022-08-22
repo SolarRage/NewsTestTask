@@ -6,7 +6,6 @@ import com.myarulin.newstesttask.model.ArticleModel
 import com.myarulin.newstesttask.repo.NewsRepository
 import com.myarulin.newstesttask.ui.BaseViewStateViewModel
 import com.myarulin.newstesttask.ui.home.HomeContract.HomeViewState
-import io.reactivex.Scheduler
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
@@ -81,7 +80,20 @@ class HomeViewModel(
             }
     }
 
+/*
+    fun checkBookmarks(article: ArticleModel){
+        disposeNewsRequest()
+        articleDisposable = newsRepository.checkBookmark(article.newsId)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe({
+            })
+            { Log.e(TAG, "This article already in db") }
+    }
+*/
+
     fun saveBookmark(article: ArticleModel) {
+        disposeNewsRequest()
         articleDisposable = newsRepository.upsert(article)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())

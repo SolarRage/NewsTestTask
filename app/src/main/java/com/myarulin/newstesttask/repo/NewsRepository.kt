@@ -23,4 +23,6 @@ class NewsRepository(
 
     fun deleteArticle(article: ArticleModel) = db.getArticleDao().deleteArtcile(article)
 
+    fun checkBookmark(id: Int?) = db.getArticleDao().isItemExists(id)
+
 }

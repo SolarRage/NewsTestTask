@@ -19,4 +19,7 @@ interface NewsDao {
 
     @Delete
     fun deleteArtcile(article: ArticleModel): Completable
+
+    @Query("SELECT EXISTS(SELECT * FROM articles WHERE newsId = :id)")
+    fun isItemExists(id: Int?): Single<Boolean>
 }
