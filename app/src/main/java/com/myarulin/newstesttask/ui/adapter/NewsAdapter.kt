@@ -1,4 +1,4 @@
-package com.myarulin.newstesttask.adapter
+package com.myarulin.newstesttask.ui.adapter
 
 import android.view.LayoutInflater
 import android.view.View
@@ -10,8 +10,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.myarulin.newstesttask.R
-import com.myarulin.newstesttask.adapter.NewsAdapter.ArticleViewHolder
-import com.myarulin.newstesttask.db.Article
+import com.myarulin.newstesttask.ui.adapter.NewsAdapter.ArticleViewHolder
 import com.myarulin.newstesttask.model.ArticleModel
 import java.net.URL
 
@@ -22,7 +21,6 @@ class NewsAdapter(
 ) : RecyclerView.Adapter<ArticleViewHolder>()  {
 
     private var articles: List<ArticleModel> = emptyList()
-
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ArticleViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.item_news_copy, parent, false)
@@ -61,8 +59,7 @@ class NewsAdapter(
             Glide.with(itemView.context).load(item.imageURL).into(image)
             title.text = item.title
             description.text = item.description
-            val url = URL(item.website)
-            website.text = url.host
+            website.text = URL(item.website).host
             ivBookmark.setOnClickListener { onBookmarkClick(item) }
             ivShare.setOnClickListener { onShareClick(item) }
             clCardContainer.setOnClickListener { onItemClick(item) }
@@ -83,7 +80,7 @@ class NewsAdapter(
 
 
         override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
-            return oldItems[oldItemPosition].newsId == newItems[newItemPosition].newsId
+            return oldItems[oldItemPosition].website == newItems[newItemPosition].website
         }
 
         override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {

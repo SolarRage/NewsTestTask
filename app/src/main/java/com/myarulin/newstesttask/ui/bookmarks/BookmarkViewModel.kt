@@ -1,7 +1,6 @@
 package com.myarulin.newstesttask.ui.bookmarks
 
 import android.util.Log
-import com.myarulin.newstesttask.db.Article
 import com.myarulin.newstesttask.model.ArticleModel
 import com.myarulin.newstesttask.repo.NewsRepository
 import com.myarulin.newstesttask.ui.BaseViewStateViewModel
@@ -15,8 +14,9 @@ import io.reactivex.schedulers.Schedulers
 import io.reactivex.subjects.BehaviorSubject
 import java.util.concurrent.TimeUnit
 
-class BookmarkViewModel(val newsRepository: NewsRepository)
-    : BaseViewStateViewModel<BookmarksViewState, BookmarksEffect>(){
+class BookmarkViewModel(
+    private val newsRepository: NewsRepository
+) : BaseViewStateViewModel<BookmarksViewState, BookmarksEffect>() {
 
     private val TAG = BookmarkViewModel::class.simpleName
     private val compositeDisposable = CompositeDisposable()
@@ -35,9 +35,9 @@ class BookmarkViewModel(val newsRepository: NewsRepository)
 
     private fun subscribeForTestChanges() {
         compositeDisposable += textChangeSubject
-            .debounce(500, TimeUnit.MILLISECONDS)
+            .debounce(300, TimeUnit.MILLISECONDS)
             .distinctUntilChanged()
-            .filter{it.isNotBlank()}
+            .filter { it.isNotBlank() }
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
                 { handleTextChanged(it) },
@@ -56,11 +56,11 @@ class BookmarkViewModel(val newsRepository: NewsRepository)
                 setState { copy(articles = it) }
             }
             ) {
-                Log.e(TAG, "Error while receiving articles")
+                Log.e(TAG, "Error while receiving articles : ${it.message}")
             }
     }
 
-    fun loadNews(){
+    fun loadNews() {
         disposeNewsRequest()
         articleDisposable = newsRepository.getSavedNews()
             .flattenAsFlowable { it }
@@ -71,17 +71,24 @@ class BookmarkViewModel(val newsRepository: NewsRepository)
                 setState { copy(articles = it) }
             }
             ) {
-                Log.e(TAG, "Error while receiving articles")
+                Log.e(TAG, "Error while receiving articles : ${it.message}")
             }
     }
 
-    fun deleteBookmark(article: ArticleModel){
+    fun deleteBookmark(article: ArticleModel) {
         articleDisposable = newsRepository.deleteArticle(article)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
-            .subscribe({})
-            { Log.e(TAG, "Error while delete articles") }
+            .subscribe({ handleBookmarkDeleted(article) })
+            { Log.e(TAG, "Error while delete articles : ${it.message}") }
 
+    }
+
+    private fun handleBookmarkDeleted(article: ArticleModel) {
+        val articles = viewStateLiveData.value?.articles.orEmpty().toMutableList().apply {
+            remove(article)
+        }
+        setState { copy(articles = articles) }
     }
 
     private fun disposeNewsRequest() {

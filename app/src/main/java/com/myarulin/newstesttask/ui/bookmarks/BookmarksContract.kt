@@ -1,6 +1,5 @@
 package com.myarulin.newstesttask.ui.bookmarks
 
-import com.myarulin.newstesttask.db.Article
 import com.myarulin.newstesttask.model.ArticleModel
 import com.myarulin.newstesttask.ui.BaseFragment
 

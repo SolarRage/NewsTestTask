@@ -33,7 +33,6 @@ class HomeViewModel(
         textChangeSubject.onNext(text)
     }
 
-
     override fun init() {
         subscribeForTestChanges()
     }
@@ -61,7 +60,7 @@ class HomeViewModel(
                 setState { copy(articles = it) }
             }
             ) {
-                Log.e(TAG, "Error while load articles")
+                Log.e(TAG, "Error while load articles : ${it.message}")
             }
     }
 
@@ -76,21 +75,9 @@ class HomeViewModel(
                 setState { copy(articles = it) }
             }
             ) {
-                Log.e(TAG, "Error while receiving articles")
+                Log.e(TAG, "Error while receiving articles : ${it.message}")
             }
     }
-
-/*
-    fun checkBookmarks(article: ArticleModel){
-        disposeNewsRequest()
-        articleDisposable = newsRepository.checkBookmark(article.newsId)
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe({
-            })
-            { Log.e(TAG, "This article already in db") }
-    }
-*/
 
     fun saveBookmark(article: ArticleModel) {
         disposeNewsRequest()
@@ -98,15 +85,14 @@ class HomeViewModel(
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({})
-            { Log.e(TAG, "Error while save articles") }
+            { Log.e(TAG, "Error while save articles : ${it.message}") }
     }
 
 
     private fun mapToItemModel(item: Article) = ArticleModel(
-        item.id,
+        item.url.orEmpty(),
         item.title,
         item.description,
-        item.url,
         item.urlToImage
     )
 
@@ -117,6 +103,4 @@ class HomeViewModel(
             }
         }
     }
-
-
 }

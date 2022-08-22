@@ -7,10 +7,9 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ProgressBar
 import androidx.core.widget.doOnTextChanged
-import com.myarulin.newstesttask.adapter.NewsAdapter
-import com.myarulin.newstesttask.adapter.VerticalSpaceItemDecoration
+import com.myarulin.newstesttask.ui.adapter.NewsAdapter
+import com.myarulin.newstesttask.ui.adapter.VerticalSpaceItemDecoration
 import com.myarulin.newstesttask.databinding.HomeFragmentBinding
-import com.myarulin.newstesttask.db.Article
 import com.myarulin.newstesttask.model.ArticleModel
 import com.myarulin.newstesttask.ui.BaseFragment
 import com.myarulin.newstesttask.ui.WebActivity

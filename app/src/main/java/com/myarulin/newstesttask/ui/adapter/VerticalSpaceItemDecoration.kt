@@ -1,4 +1,4 @@
-package com.myarulin.newstesttask.adapter
+package com.myarulin.newstesttask.ui.adapter
 
 import android.content.Context
 import android.graphics.Rect

@@ -1,7 +1,6 @@
 package com.myarulin.newstesttask.repo
 
 import com.myarulin.newstesttask.api.NetService
-import com.myarulin.newstesttask.db.Article
 import com.myarulin.newstesttask.db.NewsDatabase
 import com.myarulin.newstesttask.model.ArticleModel
 
@@ -21,8 +20,8 @@ class NewsRepository(
 
     fun searchSavedNews(search: String) = db.getArticleDao().searchArticle(search)
 
-    fun deleteArticle(article: ArticleModel) = db.getArticleDao().deleteArtcile(article)
+    fun deleteArticle(article: ArticleModel) = db.getArticleDao().deleteArticle(article)
 
-    fun checkBookmark(id: Int?) = db.getArticleDao().isItemExists(id)
+    fun checkBookmark(website: String) = db.getArticleDao().isItemExists(website)
 
 }

@@ -4,14 +4,12 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
-import androidx.room.TypeConverters
 import com.myarulin.newstesttask.model.ArticleModel
 
 @Database(
     entities = [ArticleModel::class],
     version = 1
 )
-@TypeConverters(Convertors::class)
 abstract class NewsDatabase : RoomDatabase() {
     abstract fun getArticleDao(): NewsDao
 
