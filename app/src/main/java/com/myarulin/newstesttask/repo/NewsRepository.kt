@@ -19,6 +19,8 @@ class NewsRepository(
 
     fun getSavedNews() = db.getArticleDao().getAll()
 
+    fun searchSavedNews(search: String) = db.getArticleDao().searchArticle(search)
+
     fun deleteArticle(article: ArticleModel) = db.getArticleDao().deleteArtcile(article)
 
 }

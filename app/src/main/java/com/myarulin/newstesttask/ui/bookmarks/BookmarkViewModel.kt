@@ -45,6 +45,21 @@ class BookmarkViewModel(val newsRepository: NewsRepository)
             )
     }
 
+    private fun handleTextChanged(text: String) {
+        disposeNewsRequest()
+        articleDisposable = newsRepository.searchSavedNews(text)
+            .flattenAsFlowable { it }
+            .toList()
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe({
+                setState { copy(articles = it) }
+            }
+            ) {
+                Log.e(TAG, "Error while receiving articles")
+            }
+    }
+
     fun loadNews(){
         disposeNewsRequest()
         articleDisposable = newsRepository.getSavedNews()
@@ -66,10 +81,6 @@ class BookmarkViewModel(val newsRepository: NewsRepository)
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({})
             { Log.e(TAG, "Error while delete articles") }
-
-    }
-
-    private fun handleTextChanged(text: String) {
 
     }
 
